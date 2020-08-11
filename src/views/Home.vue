@@ -1,18 +1,30 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <div id="cesium-test"></div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import * as Cesium from 'cesium/Cesium';
+import 'cesium/Widgets/widgets.css';
+window.CESIUM_BASE_URL = './';
 
 export default {
-  name: "Home",
-  components: {
-    HelloWorld
+  name: 'Home',
+
+  mounted() {
+    new Cesium.Viewer('cesium-test', {
+      animation: false,
+      timeline: false,
+      terrainProvider: Cesium.createWorldTerrain()
+    });
   }
 };
 </script>
+
+<style lang="less" scoped>
+#cesium-test {
+  height: 100vh;
+  width: 100vw;
+}
+</style>
