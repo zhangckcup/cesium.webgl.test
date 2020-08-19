@@ -1,14 +1,18 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
 
 Vue.use(VueRouter);
 
 const routes = [
   {
+    path: '/cesium',
+    name: 'cesium',
+    component: () => import('../views/cesium')
+  },
+  {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'webgl',
+    component: () => import('../views/webgl')
   }
 ];
 

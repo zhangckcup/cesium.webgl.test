@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="cesium">
     <div id="cesium-test"></div>
   </div>
 </template>
@@ -7,7 +7,6 @@
 <script>
 import * as Cesium from 'cesium/Cesium';
 import 'cesium/Widgets/widgets.css';
-window.CESIUM_BASE_URL = './';
 
 export default {
   name: 'Home',
@@ -16,7 +15,8 @@ export default {
     new Cesium.Viewer('cesium-test', {
       animation: false,
       timeline: false,
-      terrainProvider: Cesium.createWorldTerrain()
+      terrainProvider: Cesium.createWorldTerrain(),
+      creditContainer: document.createElement('div')
     });
   }
 };
