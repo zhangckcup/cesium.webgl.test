@@ -1,17 +1,17 @@
 <template>
   <div class="webgl">
-    <HelloTriangel />
+    <Home />
   </div>
 </template>
 
 <script>
-import HelloTriangel from '@/components/ch03/hello-triangle';
+import Home from '@/components/ch04/rotating-triangle';
 
 export default {
   name: 'webgl',
 
   components: {
-    HelloTriangel
+    Home
   }
 };
 </script>

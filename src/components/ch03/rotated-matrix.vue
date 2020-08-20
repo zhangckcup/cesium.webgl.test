@@ -1,42 +1,30 @@
 <template>
-  <div class="hello-triangle">
-    <canvas width="400" height="400" id="webgl33"></canvas>
+  <div class="rotated-matrix">
+    <canvas width="400" height="400" id="webgl36"></canvas>
   </div>
 </template>
 
 <script>
 import { initShaders, getWebGLContext } from '@/assets/webgllib/cuon-utils';
-import * as math from 'mathjs';
 
 export default {
-  name: 'hello-triangle',
+  name: 'rotated-matrix',
 
   mounted() {
-    // 平移三角形
-    // const VSHADER_SOURCE = `
-    //   attribute vec4 a_Position;
-    //   uniform vec4 u_Translation;
-    //   void main() {
-    //     gl_Position = a_Position + u_Translation;
-    //   }\n`;
-
-    // 旋转三角形
     const VSHADER_SOURCE = `
       attribute vec4 a_Position;
-      uniform float u_CosB, u_SinB;
+      uniform mat4 u_xformMatrix;
       void main() {
-        gl_Position.x = a_Position.x * u_CosB - a_Position.y * u_SinB;
-        gl_Position.y = a_Position.x * u_SinB + a_Position.y * u_CosB;
-        gl_Position.z = a_Position.z;
-        gl_Position.w = 1.0;
-      }\n`;
-
+        gl_Position = u_xformMatrix * a_Position;
+      }
+    `;
     const FSHADER_SOURCE = `
       void main() {
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-      }\n`;
+      }
+    `;
 
-    let canvas = document.getElementById('webgl33');
+    let canvas = document.getElementById('webgl36');
     let gl = getWebGLContext(canvas);
 
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
@@ -47,31 +35,26 @@ export default {
     let n = this.initVertexBuffers(gl);
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    // 绘制基本图形 TRIANGLES / TRIANGLE_STRIP / POINTS / LINES / LINE_STRIP / LINE_LOOP
-    // gl.drawArrays(gl.TRIANGLES, 0, n);
 
-    // 平移三角形
-    // let Tx = 0.5,
-    //   Ty = 0.5,
-    //   Tz = 0.5;
-    // let u_Translation = gl.getUniformLocation(gl.program, 'u_Translation');
-    // gl.uniform4f(u_Translation, Tx, Ty, Tz, 0.0);
-    // gl.drawArrays(gl.TRIANGLES, 0, n);
+    let xformMatrix = this.TransformationMatrix(0, 0, 0, 0, 2, 2, 1);
+    let u_xformMatrix = gl.getUniformLocation(gl.program, 'u_xformMatrix');
 
-    // 旋转三角形
-    const ANGLE = 90.0;
-    let cosB = math.cos(math.unit(ANGLE, 'deg'));
-    let sinB = math.sin(math.unit(ANGLE, 'deg'));
-
-    let u_CosB = gl.getUniformLocation(gl.program, 'u_CosB');
-    let u_SinB = gl.getUniformLocation(gl.program, 'u_SinB');
-
-    gl.uniform1f(u_CosB, cosB);
-    gl.uniform1f(u_SinB, sinB);
+    gl.uniformMatrix4fv(u_xformMatrix, false, xformMatrix);
     gl.drawArrays(gl.TRIANGLES, 0, n);
   },
 
   methods: {
+    TransformationMatrix(angle, Tx, Ty, Tz, Sx, Sy, Sz) {
+      let cosB = Math.cos(Math.PI * angle / 180);
+      let sinB = Math.sin(Math.PI * angle / 180);
+      return new Float32Array([
+        Sx * cosB,Sx *  sinB, 0.0, 0.0,
+        Sy*-sinB,Sy*cosB, 0.0, 0.0,
+        0.0,  0.0,  Sz, 0.0,
+        Tx,   Ty,   Tz,   1.0
+      ]);
+    },
+
     initVertexBuffers(gl) {
       let vertices = new Float32Array([0, 0.5, -0.5, -0.5, 0.5, -0.5]);
       // let vertices = new Float32Array([-0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5]); // used to draw Quad
